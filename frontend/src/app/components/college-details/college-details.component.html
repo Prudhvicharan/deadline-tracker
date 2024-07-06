@@ -1,0 +1,8 @@
+<h2>{{ collegeName }}</h2>
+<h3>Programs Offered:</h3>
+<mat-list>
+  <mat-list-item *ngFor="let program of programs">
+    {{ program.name }} ({{ program.code }})
+  </mat-list-item>
+</mat-list>
+<button mat-button routerLink="/colleges">Back to Colleges</button>
