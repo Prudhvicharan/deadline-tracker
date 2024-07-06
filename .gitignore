@@ -35,6 +35,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-
-# Add this line to your .gitignore file
-.angular/cache/
+# Angular cache
+frontend/.angular/cache
