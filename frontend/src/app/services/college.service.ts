@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HttpHeaders } from '@angular/common/http';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,8 +11,14 @@ import { map } from 'rxjs/operators';
 export class CollegeService {
   private apiUrl = 'https://api.data.gov/ed/collegescorecard/v1/schools';
   private apiKey = '3wAuDRWXKx4TDcS1QLoKAjEkUo6csct8ZPF4xNZX';
+  private backendUrl = 'http://localhost:5001/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
 
   getColleges(page: number = 0, perPage: number = 20): Observable<any> {
     let params = new HttpParams()
@@ -88,5 +96,17 @@ export class CollegeService {
         }));
       })
     );
+  }
+
+  getUserColleges(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.backendUrl}/user/colleges`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  addCollege(college: any): Observable<any> {
+    return this.http.post(`${this.backendUrl}/user/colleges`, college, {
+      headers: this.getHeaders(),
+    });
   }
 }

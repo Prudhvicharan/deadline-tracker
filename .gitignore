@@ -37,3 +37,5 @@ testem.log
 Thumbs.db
 # Angular cache
 frontend/.angular/cache
+
+.env

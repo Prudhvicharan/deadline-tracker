@@ -1,1 +1,11 @@
-<p>deadline-display works!</p>
+<mat-list>
+    <mat-list-item *ngFor="let deadline of deadlines">
+      <h3 matLine>{{ deadline.collegeName }}</h3>
+      <p matLine>Deadline: {{ deadline.date | date:'mediumDate' }}</p>
+      <button mat-icon-button color="primary" (click)="editDeadline(deadline.id)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </mat-list-item>
+  </mat-list>
+  <p *ngIf="deadlines.length === 0">No deadlines set. Add colleges to your list to start tracking deadlines.</p>
+  

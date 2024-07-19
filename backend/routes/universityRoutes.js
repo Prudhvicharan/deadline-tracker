@@ -1,25 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const universityService = require('../services/universityService');
+const authMiddleware = require('../middleware/auth.middleware');
+const User = require('../models/userModel');
 
-router.get('/', async (req, res) => {
+// Get user's colleges
+router.get('/user/colleges', authMiddleware, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 0;
-    const perPage = parseInt(req.query.perPage) || 20;
-    const universities = await universityService.getUniversities(page, perPage);
-    res.json(universities);
+    const user = await User.findById(req.userId).populate('colleges');
+    res.json(user.colleges);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching universities', error: error.message });
+    res.status(500).json({ message: 'Error fetching user colleges', error: error.message });
   }
 });
 
-router.get('/:id', async (req, res) => {
+// Add college to user's list
+router.post('/user/colleges', authMiddleware, async (req, res) => {
   try {
-    const university = await universityService.getUniversityById(req.params.id);
-    res.json(university);
+    const user = await User.findById(req.userId);
+    user.colleges.push(req.body.collegeId);
+    await user.save();
+    res.json({ message: 'College added to user list' });
   } catch (error) {
-    console.error('Error in route handler:', error); // Add logging
-    res.status(500).json({ message: 'Error fetching university details', error: error.message });
+    res.status(500).json({ message: 'Error adding college to user list', error: error.message });
   }
 });
 

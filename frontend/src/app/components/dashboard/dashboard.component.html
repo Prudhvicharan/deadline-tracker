@@ -1,0 +1,15 @@
+<h2>Welcome to Your College Application Dashboard</h2>
+<p>Hello, {{ currentUser.username }}!</p>
+
+<mat-card>
+  <mat-card-title>Upcoming Deadlines</mat-card-title>
+  <mat-card-content>
+    <app-deadline-display [limit]="3"></app-deadline-display>
+  </mat-card-content>
+</mat-card>
+
+<nav>
+  <button mat-raised-button color="primary" routerLink="/colleges">View All Colleges</button>
+  <button mat-raised-button color="accent" routerLink="/my-colleges">My College List</button>
+  <button mat-raised-button color="warn" routerLink="/deadlines">All Deadlines</button>
+</nav>

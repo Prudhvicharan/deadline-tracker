@@ -9,21 +9,30 @@ import { map } from 'rxjs/operators';
 export class AuthService {
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser: Observable<any>;
+  private apiUrl = 'http://localhost:5001/api/auth';
 
   constructor(private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<any>(
-      JSON.parse(localStorage.getItem('currentUser') || '{}')
+      JSON.parse(localStorage.getItem('currentUser') || 'null')
     );
     this.currentUser = this.currentUserSubject.asObservable();
   }
 
-  public get currentUserValue() {
+  public get currentUserValue(): any {
     return this.currentUserSubject.value;
   }
 
-  login(username: string, password: string) {
+  register(username: string, email: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, {
+      username,
+      email,
+      password,
+    });
+  }
+
+  login(email: string, password: string) {
     return this.http
-      .post<any>(`/api/users/authenticate`, { username, password })
+      .post<any>(`${this.apiUrl}/login`, { email, password })
       .pipe(
         map((user) => {
           // store user details and jwt token in local storage to keep user logged in between page refreshes
@@ -40,7 +49,11 @@ export class AuthService {
     this.currentUserSubject.next(null);
   }
 
-  register(user: any) {
-    return this.http.post(`/api/users/register`, user);
+  isLoggedIn(): boolean {
+    return !!this.currentUserValue;
+  }
+
+  getToken(): string | null {
+    return this.currentUserValue ? this.currentUserValue.token : null;
   }
 }

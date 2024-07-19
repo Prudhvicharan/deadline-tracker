@@ -1,0 +1,11 @@
+<!-- my-colleges.component.html -->
+<h2>My College List</h2>
+<mat-list>
+  <mat-list-item *ngFor="let college of myColleges">
+    {{college.collegeId}}
+    {{college.name}}
+    {{college.location}}
+    {{college.admissionRate}}
+    <!-- Add more college details as needed -->
+  </mat-list-item>
+</mat-list>

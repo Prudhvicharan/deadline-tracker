@@ -9,8 +9,11 @@
   <mat-list-item *ngFor="let college of colleges">
     {{college.name}} - {{college.location}}
     <a mat-button [routerLink]="['/colleges', college.id]">View Programs</a>
+    <button mat-button color="accent" (click)="addToMyList(college)">Add to My List</button>
   </mat-list-item>
 </mat-list>
-<button mat-button (click)="previousPage()" [disabled]="currentPage === 0">Previous</button>
-<button mat-button (click)="nextPage()" [disabled]="currentPage === totalPages - 1">Next</button>
-<p>Page {{currentPage + 1}} of {{totalPages}}</p>
+<mat-paginator [length]="totalItems"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="[5, 10, 20]"
+               (page)="onPageChange($event)">
+</mat-paginator>

@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatIconModule } from '@angular/material/icon';
 
 import { SearchComponent } from './components/search/search.component';
 import { CollegeListComponent } from './components/college-list/college-list.component';
@@ -21,6 +23,8 @@ import { DeadlineDisplayComponent } from './components/deadline-display/deadline
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CollegeDetailsComponent } from './components/college-details/college-details.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { MyCollegesComponent } from './components/my-colleges/my-colleges.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +36,8 @@ import { CollegeDetailsComponent } from './components/college-details/college-de
     LoginComponent,
     RegisterComponent,
     CollegeDetailsComponent,
+    DashboardComponent,
+    MyCollegesComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +53,8 @@ import { CollegeDetailsComponent } from './components/college-details/college-de
     MatListModule,
     HttpClientModule,
     FormsModule,
+    MatPaginatorModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
