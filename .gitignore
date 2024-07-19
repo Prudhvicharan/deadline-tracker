@@ -38,4 +38,4 @@ Thumbs.db
 # Angular cache
 frontend/.angular/cache
 
-.env
+backend/.env
