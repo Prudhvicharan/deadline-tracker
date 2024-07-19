@@ -16,9 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 
-import { SearchComponent } from './components/search/search.component';
 import { CollegeListComponent } from './components/college-list/college-list.component';
-import { ProgramListComponent } from './components/program-list/program-list.component';
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
@@ -29,9 +27,7 @@ import { MyCollegesComponent } from './components/my-colleges/my-colleges.compon
 @NgModule({
   declarations: [
     AppComponent,
-    SearchComponent,
     CollegeListComponent,
-    ProgramListComponent,
     DeadlineDisplayComponent,
     LoginComponent,
     RegisterComponent,
