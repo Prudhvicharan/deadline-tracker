@@ -3,11 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { CollegeService } from '../../services/college.service';
 
 @Component({
-  selector: 'app-my-colleges',
-  templateUrl: './my-colleges.component.html',
-  styleUrls: ['./my-colleges.component.scss'],
+  selector: 'app-user-colleges',
+  templateUrl: './user-colleges.component.html',
+  styleUrls: ['./user-colleges.component.scss'],
 })
-export class MyCollegesComponent implements OnInit {
+export class UserCollegesComponent implements OnInit {
   myColleges: any[] = [];
 
   constructor(private collegeService: CollegeService) {}

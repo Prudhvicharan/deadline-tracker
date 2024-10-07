@@ -15,11 +15,13 @@ export class CollegeService {
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  // Get Authorization headers (if needed)
   private getHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
+  // Fetch a list of colleges
   getColleges(page: number = 0, perPage: number = 20): Observable<any> {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
@@ -45,6 +47,7 @@ export class CollegeService {
     );
   }
 
+  // Search for colleges by name
   searchColleges(searchTerm: string): Observable<any[]> {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
@@ -67,6 +70,7 @@ export class CollegeService {
     );
   }
 
+  // Fetch details of a specific college by ID
   getCollegeDetails(collegeId: string): Observable<any> {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
@@ -81,11 +85,12 @@ export class CollegeService {
     );
   }
 
+  // Fetch programs for a specific college by ID
   getPrograms(collegeId: string): Observable<any[]> {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
       .set('id', collegeId)
-      .set('fields', 'id,latest.programs.cip_4_digit');
+      .set('fields', 'id,latest.programs.cip_4_digit,latest.programs.earnings,latest.programs.debt,latest.programs.credential');
 
     return this.http.get<any>(this.apiUrl, { params }).pipe(
       map((response: any) => {
@@ -93,17 +98,25 @@ export class CollegeService {
         return programs.map((program: any) => ({
           name: program.title,
           code: program.code,
+          credential: program.credential ? program.credential.title : 'N/A',
+          earnings: {
+            one_year: program.earnings ? program.earnings['1_yr']?.overall_median_earnings : 'N/A',
+            five_year: program.earnings ? program.earnings['5_yr']?.overall_median_earnings : 'N/A',
+          },
+          debt: program.debt ? program.debt.average : 'N/A',
         }));
       })
     );
   }
 
+  // Fetch the user's saved colleges
   getUserColleges(): Observable<any[]> {
     return this.http.get<any[]>(`${this.backendUrl}/user/colleges`, {
       headers: this.getHeaders(),
     });
   }
 
+  // Add a college to the user's saved list
   addCollege(college: any): Observable<any> {
     return this.http.post(`${this.backendUrl}/user/colleges`, college, {
       headers: this.getHeaders(),

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +15,9 @@ import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material/dialog'; // Import MatDialogModule
+
 
 import { CollegeListComponent } from './components/college-list/college-list.component';
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
@@ -22,7 +25,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { CollegeDetailsComponent } from './components/college-details/college-details.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { MyCollegesComponent } from './components/my-colleges/my-colleges.component';
+import { UserCollegesComponent } from './components/user-colleges/user-colleges.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +36,7 @@ import { MyCollegesComponent } from './components/my-colleges/my-colleges.compon
     RegisterComponent,
     CollegeDetailsComponent,
     DashboardComponent,
-    MyCollegesComponent,
+    UserCollegesComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,8 +54,11 @@ import { MyCollegesComponent } from './components/my-colleges/my-colleges.compon
     FormsModule,
     MatPaginatorModule,
     MatIconModule,
+    MatChipsModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CollegeService } from '../../services/college.service';
-import { PageEvent } from '@angular/material/paginator';
-import { AuthService } from '../../services/auth.service';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+// import { ProgramDetailsComponent } from '../program-details/program-details.component';
 
 @Component({
   selector: 'app-college-list',
@@ -11,17 +14,30 @@ import { AuthService } from '../../services/auth.service';
 export class CollegeListComponent implements OnInit {
   colleges: any[] = [];
   currentPage = 0;
-  pageSize = 20;
+  pageSize = 24;
   totalItems = 0;
   searchTerm: string = '';
+  activeFilters: string[] = [];
+  private searchSubject = new Subject<string>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private collegeService: CollegeService,
-    private authService: AuthService
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.loadColleges();
+    this.setupSearch();
+  }
+
+  setupSearch(): void {
+    this.searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        this.searchColleges();
+      });
   }
 
   loadColleges(): void {
@@ -41,6 +57,7 @@ export class CollegeListComponent implements OnInit {
           this.colleges = colleges;
           this.currentPage = 0;
           this.totalItems = colleges.length;
+          this.paginator.firstPage();
         },
         (error) => console.error('Error searching colleges:', error)
       );
@@ -50,6 +67,10 @@ export class CollegeListComponent implements OnInit {
     }
   }
 
+  onSearchInput(): void {
+    this.searchSubject.next(this.searchTerm);
+  }
+
   onPageChange(event: PageEvent): void {
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
@@ -57,34 +78,18 @@ export class CollegeListComponent implements OnInit {
   }
 
   addToMyList(college: any): void {
-    if (this.authService.isLoggedIn()) {
-      console.log('college', college);
-      const collegeData = {
-        name: college.name,
-        location: college.location,
-        collegeId: college.id,
-        admissionRate: college.admissionRate,
-      };
-      console.log('collegeData', collegeData);
-      this.collegeService.addCollege(collegeData).subscribe(
-        () => {
-          console.log('College added to your list');
-          // Optionally, show a snackbar or some other notification
-        },
-        (error) => {
-          console.error('Error adding college to list:', error);
-          if (error.status === 401) {
-            console.log('Authentication failed. Please log in again.');
-            this.authService.logout(); // Force logout if token is invalid
-            // Redirect to login page
-          }
-        }
-      );
-    } else {
-      console.log(
-        'User not logged in. Please log in to add colleges to your list.'
-      );
-      // Redirect to login page
-    }
+    // Implement add to list functionality
+  }
+
+  viewDetails(college: any): void {
+    // this.dialog.open(ProgramDetailsComponent, {
+    //   data: college.id,
+    //   width: '600px',
+    // });
+  }
+
+  removeFilter(filter: string): void {
+    this.activeFilters = this.activeFilters.filter((f) => f !== filter);
+    // Implement filter removal logic
   }
 }

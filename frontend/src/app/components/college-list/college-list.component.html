@@ -1,19 +1,43 @@
-<h2>Colleges</h2>
-<div>
-  <mat-form-field>
-    <input matInput [(ngModel)]="searchTerm" placeholder="Search colleges">
-  </mat-form-field>
-  <button mat-raised-button color="primary" (click)="searchColleges()">Search</button>
+<div class="college-explorer">
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Explore Colleges</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (keyup)="onSearchInput()" placeholder="Search by name, location, or program">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="searchColleges()">Search</button>
+  </div>
+
+  <div class="college-grid-container">
+    <div class="college-grid" *ngIf="colleges.length > 0">
+      <mat-card *ngFor="let college of colleges" class="college-card">
+        <mat-card-header>
+          <div mat-card-avatar class="college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/default-college.png') + ')'"></div>
+          <mat-card-title>{{college.name}}</mat-card-title>
+          <mat-card-subtitle>{{college.location}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p><mat-icon>school</mat-icon> Admission Rate: {{college.admissionRate | percent}}</p>
+          <mat-chip-list>
+            <mat-chip *ngFor="let program of college.topPrograms | slice:0:3">{{program}}</mat-chip>
+          </mat-chip-list>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="viewDetails(college)">DETAILS</button>
+          <button mat-button color="accent" (click)="addToMyList(college)">
+            <mat-icon>favorite</mat-icon> ADD TO LIST
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    <p *ngIf="colleges.length === 0" class="no-results">No colleges found. Try adjusting your search.</p>
+  </div>
+
+  <div class="paginator-container">
+    <mat-paginator [length]="totalItems"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="[12, 24, 48]"
+                   (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
 </div>
-<mat-list>
-  <mat-list-item *ngFor="let college of colleges">
-    {{college.name}} - {{college.location}}
-    <a mat-button [routerLink]="['/colleges', college.id]">View Programs</a>
-    <button mat-button color="accent" (click)="addToMyList(college)">Add to My List</button>
-  </mat-list-item>
-</mat-list>
-<mat-paginator [length]="totalItems"
-               [pageSize]="pageSize"
-               [pageSizeOptions]="[5, 10, 20]"
-               (page)="onPageChange($event)">
-</mat-paginator>

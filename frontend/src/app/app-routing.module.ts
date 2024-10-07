@@ -7,7 +7,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { CollegeDetailsComponent } from './components/college-details/college-details.component';
 import { AuthGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { MyCollegesComponent } from './components/my-colleges/my-colleges.component';
+import { UserCollegesComponent } from './components/user-colleges/user-colleges.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/search', pathMatch: 'full' },
@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'my-colleges', component: MyCollegesComponent },
+  { path: 'my-colleges', component: UserCollegesComponent },
 ];
 
 @NgModule({
