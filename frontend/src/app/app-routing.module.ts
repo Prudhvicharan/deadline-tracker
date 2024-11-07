@@ -4,7 +4,7 @@ import { CollegeListComponent } from './components/college-list/college-list.com
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { CollegeDetailsComponent } from './components/college-details/college-details.component';
+import { ProgramDetailsComponent } from './components/program-details/program-details.component';
 import { AuthGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UserCollegesComponent } from './components/user-colleges/user-colleges.component';
@@ -16,7 +16,7 @@ const routes: Routes = [
     component: CollegeListComponent,
     canActivate: [AuthGuard],
   },
-  { path: 'colleges/:id', component: CollegeDetailsComponent },
+  { path: 'colleges/:id', component: ProgramDetailsComponent },
   {
     path: 'deadlines/:programId',
     component: DeadlineDisplayComponent,

@@ -4,8 +4,8 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-// import { ProgramDetailsComponent } from '../program-details/program-details.component';
-
+import { ProgramDetailsComponent } from '../program-details/program-details.component';
+import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-college-list',
   templateUrl: './college-list.component.html',
@@ -24,7 +24,8 @@ export class CollegeListComponent implements OnInit {
 
   constructor(
     private collegeService: CollegeService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -77,15 +78,35 @@ export class CollegeListComponent implements OnInit {
     this.loadColleges();
   }
 
+  // addToMyList(college: any): void {
+  //   // Implement add to list functionality
+  // }
+
   addToMyList(college: any): void {
-    // Implement add to list functionality
+    if (this.authService.isLoggedIn()) {
+      const collegeData = {
+        name: college.name,
+        location: college.location,
+        collegeId: college.id,
+        admissionRate: college.admissionRate,
+      };
+      this.collegeService.addCollege(collegeData).subscribe(
+        () => console.log('College added to your list'),
+        (error) => {
+          console.error('Error adding college to list:', error);
+          if (error.status === 401) {
+            this.authService.logout();
+          }
+        }
+      );
+    }
   }
 
   viewDetails(college: any): void {
-    // this.dialog.open(ProgramDetailsComponent, {
-    //   data: college.id,
-    //   width: '600px',
-    // });
+    this.dialog.open(ProgramDetailsComponent, {
+      data: college.id,
+      width: '600px',
+    });
   }
 
   removeFilter(filter: string): void {

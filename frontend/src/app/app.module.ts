@@ -23,9 +23,11 @@ import { CollegeListComponent } from './components/college-list/college-list.com
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { CollegeDetailsComponent } from './components/college-details/college-details.component';
+import { ProgramDetailsComponent } from './components/program-details/program-details.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UserCollegesComponent } from './components/user-colleges/user-colleges.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,7 @@ import { UserCollegesComponent } from './components/user-colleges/user-colleges.
     DeadlineDisplayComponent,
     LoginComponent,
     RegisterComponent,
-    CollegeDetailsComponent,
+    ProgramDetailsComponent,
     DashboardComponent,
     UserCollegesComponent,
   ],
@@ -56,6 +58,8 @@ import { UserCollegesComponent } from './components/user-colleges/user-colleges.
     MatIconModule,
     MatChipsModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

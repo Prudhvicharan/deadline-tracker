@@ -1,0 +1,52 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+  }
+  
+  .spacer {
+    flex: 1;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    height: calc(100vh - 64px);
+    background-color: white;
+  }
+  
+  .mat-sidenav {
+    width: 250px;
+  }
+  
+  .dashboard-content {
+    // padding: 2rem;
+    width: 100%;
+  }
+  
+  .upcoming-deadlines {
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-buttons {
+    display: none; /* Removed buttons as per the new approach */
+  }
+  
+  .dashboard-stats {
+    margin: 2rem 0;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 768px) {
+    .mat-sidenav {
+      width: 100%;
+    }
+  
+    .dashboard-content {
+      padding: 1rem;
+    }
+  
+    .navbar {
+      padding: 0 1rem;
+    }
+  }

@@ -1,0 +1,51 @@
+<div class="college-details-container">
+  <h2 class="college-title">{{ collegeName }}</h2>
+  <h3 class="programs-offered">Programs Offered</h3>
+
+  <form [formGroup]="filterForm" class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by Department</mat-label>
+      <mat-select formControlName="department">
+        <mat-option value="">All Departments</mat-option>
+        <mat-option *ngFor="let department of departments" [value]="department">
+          {{ department }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by Degree</mat-label>
+      <mat-select formControlName="degree">
+        <mat-option value="">All Degrees</mat-option>
+        <mat-option *ngFor="let degree of degrees" [value]="degree">
+          {{ degree }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" class="reset-filters-btn" (click)="resetFilters()">
+      Reset Filters
+    </button>
+  </form>
+
+  <div class="programs-grid">
+    <mat-card *ngFor="let program of filteredPrograms" class="program-card">
+      <mat-card-header>
+        <mat-card-title class="program-card-title">{{ program.name }} ({{ program.code }})</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="program-card-content">
+        <p *ngIf="program.department" class="program-detail">Department: <span>{{ program.department }}</span></p>
+        <p *ngIf="program.credential" class="program-detail">Degree: <span>{{ program.credential }}</span></p>
+        <p *ngIf="program.earnings?.one_year" class="program-detail">Earnings 1 Year After Graduation: <span>{{ program.earnings.one_year | currency }}</span></p>
+        <p *ngIf="program.earnings?.five_year" class="program-detail">Earnings 5 Years After Graduation: <span>{{ program.earnings.five_year | currency }}</span></p>
+        <p *ngIf="program.debt" class="program-detail">Average Debt: <span>{{ program.debt | currency }}</span></p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <p *ngIf="filteredPrograms.length === 0" class="no-programs-message">No programs available at this moment.</p>
+
+  <button mat-raised-button color="accent" class="back-to-colleges-btn" routerLink="/colleges">
+    Back to Colleges
+  </button>
+</div>
