@@ -3,14 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { CollegeListComponent } from './components/college-list/college-list.component';
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
 import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
 import { ProgramDetailsComponent } from './components/program-details/program-details.component';
 import { AuthGuard } from './guards/auth.guard';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { UserCollegesComponent } from './components/user-colleges/user-colleges.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/search', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   {
     path: 'colleges',
     component: CollegeListComponent,
@@ -23,7 +22,6 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'my-colleges', component: UserCollegesComponent },

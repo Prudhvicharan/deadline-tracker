@@ -1,146 +1,62 @@
-<!-- <mat-toolbar color="primary" class="navbar">
-  <span class="logo">Deadline Tracker</span>
-  <span class="spacer"></span>
-  <span>Welcome, {{ currentUser.username }}</span>
-  <button mat-icon-button aria-label="Notifications">
-    <mat-icon>notifications</mat-icon>
-  </button>
-  <button mat-icon-button routerLink="/profile" aria-label="Profile">
-    <mat-icon>account_circle</mat-icon>
-  </button>
-  <button mat-raised-button color="warn" (click)="logout()">Logout</button>
-</mat-toolbar>
-
 <mat-sidenav-container class="dashboard-container">
-  <mat-sidenav mode="side" opened>
-    <mat-nav-list>
-      <mat-list-item routerLink="/dashboard">Dashboard</mat-list-item>
-      <mat-list-item routerLink="/colleges">View All Colleges</mat-list-item>
-      <mat-list-item routerLink="/my-colleges">My College List</mat-list-item>
-      <mat-list-item routerLink="/deadlines">All Deadlines</mat-list-item>
-    </mat-nav-list>
-  </mat-sidenav>
-
-  <mat-sidenav-content class="dashboard-content">
-    <mat-card class="upcoming-deadlines">
-      <mat-card-header>
-        <mat-card-title>Upcoming Deadlines</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <app-deadline-display [limit]="3"></app-deadline-display>
-      </mat-card-content>
-    </mat-card>
-
-    <div class="dashboard-stats">
-      <ngx-charts-bar-horizontal
-        [view]="[700, 400]"
-        [results]="deadlineStats"
-        [scheme]="colorScheme"
-        [legend]="true"
-        [xAxis]="true"
-        [yAxis]="true"
-        [roundEdges]="true">
-      </ngx-charts-bar-horizontal>
+  <!-- Sidebar -->
+  <mat-sidenav
+    #drawer
+    mode="side"
+    opened="true"
+    [class.collapsed]="isSidebarCollapsed"
+    class="sidebar"
+  >
+    <div [class.collapsed]="isSidebarCollapsed" class="sidebar-header">
+      <div class="logo">
+        <img src="assets/logo.png" alt="Logo" />
+      </div>
+      <button mat-icon-button class="toggle-btn" (click)="toggleSidebar()">
+        <mat-icon>{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
     </div>
 
-    <div class="dashboard-buttons">
-      <button mat-raised-button color="primary" routerLink="/colleges">View All Colleges</button>
-      <button mat-raised-button color="accent" routerLink="/my-colleges">My College List</button>
-      <button mat-raised-button color="warn" routerLink="/deadlines">All Deadlines</button>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container> -->
-
-<!-- <h2>Welcome to Your College Application Dashboard</h2>
-<p>Hello, {{ currentUser.username }}!</p>
-
-<mat-card>
-  <mat-card-title>Upcoming Deadlines</mat-card-title>
-  <mat-card-content>
-    <app-deadline-display [limit]="3"></app-deadline-display>
-  </mat-card-content>
-</mat-card>
-
-<nav>
-  <button mat-raised-button color="primary" routerLink="/colleges">View All Colleges</button>
-  <button mat-raised-button color="accent" routerLink="/my-colleges">My College List</button>
-  <button mat-raised-button color="warn" routerLink="/deadlines">All Deadlines</button>
-</nav> -->
-<mat-toolbar color="primary" class="navbar">
-  <span class="logo">Deadline Tracker</span>
-  <span class="spacer"></span>
-  <span>Welcome, {{ currentUser.username }}</span>
-  <button mat-icon-button aria-label="Notifications">
-    <mat-icon>notifications</mat-icon>
-  </button>
-  <button mat-icon-button routerLink="/profile" aria-label="Profile">
-    <mat-icon>account_circle</mat-icon>
-  </button>
-  <button mat-raised-button color="warn" (click)="logout()">Logout</button>
-</mat-toolbar>
-
-<mat-sidenav-container class="dashboard-container">
-  <!-- <mat-sidenav #drawer mode="side" opened="true" [mode]="isSmallScreen ? 'over' : 'side'" (openedChange)="onSidenavToggle($event)"> -->
-  <mat-sidenav #drawer mode="side" opened="true" [mode]="isSmallScreen ? 'over' : 'side'">
-
     <mat-nav-list>
-      <mat-list-item (click)="navigateTo('dashboard')">Dashboard</mat-list-item>
-      <mat-list-item (click)="navigateTo('colleges')">View All Colleges</mat-list-item>
-      <mat-list-item (click)="navigateTo('my-colleges')">My College List</mat-list-item>
-      <mat-list-item (click)="navigateTo('deadlines')">All Deadlines</mat-list-item>
-      <mat-list-item (click)="navigateTo('profile')">Profile</mat-list-item>
+      <mat-list-item
+        *ngFor="let item of navItems"
+        [matTooltip]="isSidebarCollapsed ? item.label : ''"
+        matTooltipPosition="right"
+        class="nav-item"
+        (click)="navigateTo(item.route)"
+      >
+        <mat-icon mat-list-icon>{{ item.icon }}</mat-icon>
+        <span *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+      </mat-list-item>
     </mat-nav-list>
+
+    <div class="bottom-section">
+      <mat-list-item class="bottom-items" (click)="navigateTo('profile')" [matTooltip]="isSidebarCollapsed ? 'Profile' : ''" matTooltipPosition="right">
+        <mat-icon mat-list-icon>account_circle</mat-icon>
+        <span *ngIf="!isSidebarCollapsed">Profile</span>
+      </mat-list-item>
+      <mat-list-item class="bottom-items" (click)="logout()" [matTooltip]="isSidebarCollapsed ? 'Logout' : ''" matTooltipPosition="right">
+        <mat-icon mat-list-icon>logout</mat-icon>
+        <span *ngIf="!isSidebarCollapsed">Logout</span>
+      </mat-list-item>
+    </div>
   </mat-sidenav>
 
+  <!-- Main Content -->
   <mat-sidenav-content class="dashboard-content">
-    <!-- <mat-card class="upcoming-deadlines">
-      <mat-card-header>
-        <mat-card-title>Upcoming Deadlines</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <app-deadline-display [limit]="3"></app-deadline-display>
-      </mat-card-content>
-    </mat-card>
-
-    <div class="dashboard-stats">
-      <ngx-charts-bar-horizontal
-        [view]="[700, 400]"
-        [results]="deadlineStats"
-        [scheme]="colorScheme"
-        [legend]="true"
-        [xAxis]="true"
-        [yAxis]="true"
-        [roundEdges]="true">
-      </ngx-charts-bar-horizontal>
+    <!-- <div *ngIf="showDashboard">
+      <app-dashboard></app-dashboard>
     </div> -->
-      <div *ngIf="showDashboard">
-        <!-- Dashboard content here -->
-        <!-- <app-dashboard></app-dashboard> -->
-      </div>
-  
-      <div *ngIf="showCollegePrograms">
-        <!-- programs offered by each college -->
-        <app-program-details></app-program-details>
-      </div>
-  
-      <div *ngIf="showColleges">
-         <!-- all college content -->
-        <app-college-list></app-college-list>
-      </div>
-  
-      <div *ngIf="showMyColleges">
-        <!-- all college content -->
-       <app-user-colleges></app-user-colleges>
-     </div>
-
-      <div *ngIf="showDeadlines">
-        <!-- Deadlines content here -->
-        <app-deadline-display></app-deadline-display>
-      </div>
-  
-      <div *ngIf="showProfile">
-        <!-- Profile content here -->
-        <!-- <app-profile></app-profile> -->
-      </div>
+    <div *ngIf="showColleges">
+      <app-college-list></app-college-list>
+    </div>
+    <div *ngIf="showMyColleges">
+      <app-user-colleges></app-user-colleges>
+    </div>
+    <div *ngIf="showDeadlines">
+      <app-deadline-display></app-deadline-display>
+    </div>
+    <div *ngIf="showProfile">
+      <app-profile></app-profile>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

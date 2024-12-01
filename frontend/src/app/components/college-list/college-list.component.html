@@ -12,12 +12,12 @@
     <div class="college-grid" *ngIf="colleges.length > 0">
       <mat-card *ngFor="let college of colleges" class="college-card">
         <mat-card-header>
-          <div mat-card-avatar class="college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/default-college.png') + ')'"></div>
+          <div mat-card-avatar class="college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/images/default-college.svg') + ')'"></div>
           <mat-card-title>{{college.name}}</mat-card-title>
           <mat-card-subtitle>{{college.location}}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <p><mat-icon>school</mat-icon> Admission Rate: {{college.admissionRate | percent}}</p>
+          <p><mat-icon class="collge-icon">school</mat-icon> Admission Rate: {{college.admissionRate | percent}}</p>
           <mat-chip-list>
             <mat-chip *ngFor="let program of college.topPrograms | slice:0:3">{{program}}</mat-chip>
           </mat-chip-list>

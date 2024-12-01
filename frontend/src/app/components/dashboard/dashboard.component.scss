@@ -1,52 +1,96 @@
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2rem;
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background: var(--primary-color);
+  color: white;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: width 0.3s ease;
+  &.collapsed {
+    width: 80px;
   }
-  
-  .spacer {
-    flex: 1;
+}
+
+.sidebar-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  transition: all 0.3s ease;
+
+  &.collapsed {
+    flex-direction: column;
+    margin-top: 0;
+    padding: 50px 15px;
   }
-  
-  .dashboard-container {
-    display: flex;
-    height: calc(100vh - 64px);
-    background-color: white;
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+.toggle-btn {
+  color: white;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
+
+  .sidebar.collapsed & {
+    right: 50%;
+    transform: translateX(50%);
+    margin-top: 20px;
   }
-  
-  .mat-sidenav {
-    width: 250px;
+}
+
+mat-nav-list {
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 0px 25px;
+  cursor: pointer;
+  // transition: background-color 0.2s ease;
+  mat-icon, span {
+    color: white !important;
   }
-  
+}
+
+.nav-item:hover {
+  background-color: var(--secondary-color);
+}
+
+.bottom-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  .bottom-items {
+    cursor: pointer;
+    padding: 10px 25px;
+  }
+  :hover {
+    background-color: var(--secondary-color);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    height: 100%;
+    z-index: 10;
+  }
+
   .dashboard-content {
-    // padding: 2rem;
-    width: 100%;
+    margin-left: 0;
+    padding: 1rem;
   }
-  
-  .upcoming-deadlines {
-    margin-bottom: 2rem;
-  }
-  
-  .dashboard-buttons {
-    display: none; /* Removed buttons as per the new approach */
-  }
-  
-  .dashboard-stats {
-    margin: 2rem 0;
-  }
-  
-  /* Responsive layout */
-  @media (max-width: 768px) {
-    .mat-sidenav {
-      width: 100%;
-    }
-  
-    .dashboard-content {
-      padding: 1rem;
-    }
-  
-    .navbar {
-      padding: 0 1rem;
-    }
-  }
+}

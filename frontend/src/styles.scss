@@ -2,3 +2,46 @@
 
 html, body { height: 100%; background: lightslategrey; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+$primary-color: #1E293B; /* Dark Navy Blue */
+$secondary-color: #64748B; /* Slate Gray */
+$tertiary-color: #CBD5E1; /* Light Grayish Blue */
+$accent-color: #38BDF8; /* Sky Blue */
+$background-color: #F1F5F9; /* Very Light Blue */
+
+:root {
+  --primary-color: #1E293B;
+  --secondary-color: #64748B;
+  --tertiary-color: #CBD5E1;
+  --accent-color: #38BDF8;
+  --background-color: #F1F5F9;
+}
+
+// $primary-color: #1B1B1B; /* Charcoal Black */
+// $secondary-color: #373737; /* Dark Gray */
+// $tertiary-color: #8C8C8C; /* Silver */
+// $accent-color: #FFD700; /* Gold */
+// $background-color: #F5F5F5; /* Light Gray */
+
+// :root {
+//   --primary-color: #1B1B1B;
+//   --secondary-color: #373737;
+//   --tertiary-color: #8C8C8C;
+//   --accent-color: #FFD700;
+//   --background-color: #F5F5F5;
+// }
+
+// $primary-color: #2E7D32; /* Forest Green */
+// $secondary-color: #81C784; /* Soft Green */
+// $tertiary-color: #C8E6C9; /* Light Green */
+// $accent-color: #FFAB91; /* Warm Coral */
+// $background-color: #FAFAFA; /* Off-White */
+
+// :root {
+//   --primary-color: #2E7D32;
+//   --secondary-color: #81C784;
+//   --tertiary-color: #C8E6C9;
+//   --accent-color: #FFAB91;
+//   --background-color: #FAFAFA;
+// }
+
