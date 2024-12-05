@@ -1,0 +1,123 @@
+<div class="profile-wrapper">
+  <div class="profile-header">
+    <h1>Profile Settings</h1>
+    <button mat-button *ngIf="!isEditMode" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+      Edit Profile
+    </button>
+  </div>
+
+  <div class="profile-content">
+    <form [formGroup]="userForm" (ngSubmit)="onSave()">
+      <!-- Profile Image Section -->
+      <div class="profile-image-section">
+        <div class="profile-image-container">
+          <img [src]="profileImage || 'assets/default-avatar.png'" alt="Profile Picture">
+          <button mat-mini-fab color="primary" class="image-upload-button" *ngIf="isEditMode">
+            <mat-icon>photo_camera</mat-icon>
+            <input type="file" (change)="onFileSelected($event)" accept="image/*">
+          </button>
+        </div>
+      </div>
+
+      <!-- Personal Information -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Personal Information
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Full Name</mat-label>
+              <input matInput formControlName="fullName" [readonly]="!isEditMode">
+              <mat-icon matSuffix>person_outline</mat-icon>
+              <mat-error *ngIf="userForm.get('fullName')?.hasError('required')">
+                Full name is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email" [readonly]="!isEditMode">
+              <mat-icon matSuffix>email</mat-icon>
+              <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Phone Number</mat-label>
+              <input matInput formControlName="phoneNumber" type="tel" [readonly]="!isEditMode">
+              <mat-icon matSuffix>phone</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Address</mat-label>
+              <textarea matInput formControlName="address" [readonly]="!isEditMode" rows="3"></textarea>
+              <mat-icon matSuffix>location_on</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Password Section -->
+      <mat-card *ngIf="isEditMode">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Current Password</mat-label>
+              <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" 
+                     formControlName="currentPassword">
+              <button mat-icon-button matSuffix (click)="hideCurrentPassword = !hideCurrentPassword">
+                <mat-icon>{{hideCurrentPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>New Password</mat-label>
+              <input matInput [type]="hideNewPassword ? 'password' : 'text'" 
+                     formControlName="newPassword">
+              <button mat-icon-button matSuffix (click)="hideNewPassword = !hideNewPassword">
+                <mat-icon>{{hideNewPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" 
+                     formControlName="confirmPassword">
+              <button mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword">
+                <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="userForm.hasError('passwordMismatch')">
+                Passwords do not match
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button *ngIf="isEditMode" mat-button color="warn" type="button" (click)="onCancel()">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </button>
+        <button *ngIf="isEditMode" mat-raised-button color="primary" type="submit" 
+                [disabled]="userForm.invalid">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

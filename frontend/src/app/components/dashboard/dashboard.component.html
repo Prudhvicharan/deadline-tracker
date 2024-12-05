@@ -22,7 +22,7 @@
         [matTooltip]="isSidebarCollapsed ? item.label : ''"
         matTooltipPosition="right"
         class="nav-item"
-        (click)="navigateTo(item.route)"
+        (click)="selectSidebarItem(item.route)"
       >
         <mat-icon mat-list-icon>{{ item.icon }}</mat-icon>
         <span *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
@@ -30,11 +30,19 @@
     </mat-nav-list>
 
     <div class="bottom-section">
-      <mat-list-item class="bottom-items" (click)="navigateTo('profile')" [matTooltip]="isSidebarCollapsed ? 'Profile' : ''" matTooltipPosition="right">
+      <mat-list-item
+        (click)="selectSidebarItem('profile')"
+        [matTooltip]="isSidebarCollapsed ? 'Profile' : ''"
+        matTooltipPosition="right"
+      >
         <mat-icon mat-list-icon>account_circle</mat-icon>
         <span *ngIf="!isSidebarCollapsed">Profile</span>
       </mat-list-item>
-      <mat-list-item class="bottom-items" (click)="logout()" [matTooltip]="isSidebarCollapsed ? 'Logout' : ''" matTooltipPosition="right">
+      <mat-list-item
+        (click)="logout()"
+        [matTooltip]="isSidebarCollapsed ? 'Logout' : ''"
+        matTooltipPosition="right"
+      >
         <mat-icon mat-list-icon>logout</mat-icon>
         <span *ngIf="!isSidebarCollapsed">Logout</span>
       </mat-list-item>
@@ -43,20 +51,35 @@
 
   <!-- Main Content -->
   <mat-sidenav-content class="dashboard-content">
-    <!-- <div *ngIf="showDashboard">
-      <app-dashboard></app-dashboard>
-    </div> -->
-    <div *ngIf="showColleges">
+    <div class="intro-container" *ngIf="!selectedSidebarItem">
+      <div class="welcome-card">
+        <img src="assets/welcome-illustration.png" alt="Welcome" class="welcome-image" />
+        <h1>Welcome to the Deadline Tracker!</h1>
+        <p>
+          Stay on top of your academic and professional goals. Track your deadlines, organize your tasks, and never miss a critical date.
+        </p>
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="selectSidebarItem('colleges')">
+            Add Colleges
+          </button>
+          <button mat-raised-button color="accent" (click)="selectSidebarItem('deadlines')">
+            Add Deadlines
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="selectedSidebarItem === 'colleges'">
       <app-college-list></app-college-list>
     </div>
-    <div *ngIf="showMyColleges">
-      <app-user-colleges></app-user-colleges>
-    </div>
-    <div *ngIf="showDeadlines">
+    <div *ngIf="selectedSidebarItem === 'deadlines'">
       <app-deadline-display></app-deadline-display>
     </div>
-    <div *ngIf="showProfile">
-      <app-profile></app-profile>
+    <div *ngIf="selectedSidebarItem === 'my-colleges'">
+      <app-user-colleges></app-user-colleges>
+    </div>
+    <div *ngIf="selectedSidebarItem === 'profile'">
+      <app-user-profile></app-user-profile>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

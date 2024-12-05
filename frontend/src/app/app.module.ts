@@ -17,6 +17,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog'; // Import MatDialogModule
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { CollegeListComponent } from './components/college-list/college-list.component';
 import { DeadlineDisplayComponent } from './components/deadline-display/deadline-display.component';
@@ -27,6 +28,7 @@ import { UserCollegesComponent } from './components/user-colleges/user-colleges.
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     ProgramDetailsComponent,
     DashboardComponent,
     UserCollegesComponent,
+    UserProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -59,6 +62,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatFormFieldModule,
     MatSelectModule,
     MatTooltipModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
