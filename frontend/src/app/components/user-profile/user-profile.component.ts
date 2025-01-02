@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CollegeService } from 'src/app/services/college.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -15,21 +16,35 @@ export class UserProfileComponent implements OnInit {
   hideConfirmPassword = true;
   profileImage: string | ArrayBuffer | null = null;
 
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar) {
+  constructor(
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private collegeService: CollegeService
+  ) {
     this.initForm();
   }
 
   ngOnInit(): void {
     this.loadUserData();
+    this.disableFormControls();
   }
 
   private initForm(): void {
     this.userForm = this.fb.group(
       {
-        fullName: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
-        phoneNumber: ['', [Validators.pattern('^\\+?[1-9]\\d{1,14}$')]],
-        address: [''],
+        username: [
+          { value: '', disabled: !this.isEditMode },
+          [Validators.required, Validators.minLength(2)],
+        ],
+        email: [
+          { value: '', disabled: !this.isEditMode },
+          [Validators.required, Validators.email],
+        ],
+        phoneNumber: [
+          { value: '', disabled: !this.isEditMode },
+          [Validators.pattern('^\\+?[1-9]\\d{1,14}$')],
+        ],
+        address: [{ value: '', disabled: !this.isEditMode }],
         currentPassword: [''],
         newPassword: [''],
         confirmPassword: [''],
@@ -40,13 +55,19 @@ export class UserProfileComponent implements OnInit {
 
   private loadUserData(): void {
     // Mock API call
-    const userData = {
-      fullName: 'John Doe',
-      email: 'john.doe@example.com',
-      phoneNumber: '+1234567890',
-      address: '123 Main Street, Springfield, USA',
-    };
-    this.userForm.patchValue(userData);
+    this.collegeService.getUserDetails().subscribe((user) => {
+      if (user) {
+        console.log(user);
+        this.userForm.patchValue(user);
+      }
+    });
+    // const userData = {
+    //   username: 'John Doe',
+    //   email: 'john.doe@example.com',
+    //   phoneNumber: '+1234567890',
+    //   address: '123 Main Street, Springfield, USA',
+    // };
+    // this.userForm.patchValue(userData);
   }
 
   onFileSelected(event: Event): void {
@@ -76,10 +97,12 @@ export class UserProfileComponent implements OnInit {
 
   onEdit(): void {
     this.isEditMode = true;
+    this.enableFormControls();
   }
 
   onCancel(): void {
     this.isEditMode = false;
+    this.disableFormControls();
     this.loadUserData();
     this.userForm.get('currentPassword')?.reset();
     this.userForm.get('newPassword')?.reset();
@@ -96,6 +119,19 @@ export class UserProfileComponent implements OnInit {
         verticalPosition: 'top',
       });
       this.isEditMode = false;
+      this.disableFormControls();
     }
+  }
+
+  private enableFormControls(): void {
+    Object.keys(this.userForm.controls).forEach((key) => {
+      this.userForm.get(key)?.enable();
+    });
+  }
+
+  private disableFormControls(): void {
+    Object.keys(this.userForm.controls).forEach((key) => {
+      this.userForm.get(key)?.disable();
+    });
   }
 }

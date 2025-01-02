@@ -90,7 +90,10 @@ export class CollegeService {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
       .set('id', collegeId)
-      .set('fields', 'id,latest.programs.cip_4_digit,latest.programs.earnings,latest.programs.debt,latest.programs.credential');
+      .set(
+        'fields',
+        'id,latest.programs.cip_4_digit,latest.programs.earnings,latest.programs.debt,latest.programs.credential'
+      );
 
     return this.http.get<any>(this.apiUrl, { params }).pipe(
       map((response: any) => {
@@ -100,8 +103,12 @@ export class CollegeService {
           code: program.code,
           credential: program.credential ? program.credential.title : 'N/A',
           earnings: {
-            one_year: program.earnings ? program.earnings['1_yr']?.overall_median_earnings : 'N/A',
-            five_year: program.earnings ? program.earnings['5_yr']?.overall_median_earnings : 'N/A',
+            one_year: program.earnings
+              ? program.earnings['1_yr']?.overall_median_earnings
+              : 'N/A',
+            five_year: program.earnings
+              ? program.earnings['5_yr']?.overall_median_earnings
+              : 'N/A',
           },
           debt: program.debt ? program.debt.average : 'N/A',
         }));
@@ -119,6 +126,12 @@ export class CollegeService {
   // Add a college to the user's saved list
   addCollege(college: any): Observable<any> {
     return this.http.post(`${this.backendUrl}/user/colleges`, college, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  getUserDetails(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.backendUrl}/userdetails`, {
       headers: this.getHeaders(),
     });
   }

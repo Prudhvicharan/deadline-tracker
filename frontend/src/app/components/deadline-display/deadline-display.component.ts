@@ -14,7 +14,7 @@ export class DeadlineDisplayComponent implements OnInit {
   constructor(private collegeService: CollegeService, private router: Router) {}
 
   ngOnInit() {
-    this.loadDeadlines();
+    // this.loadDeadlines();
   }
 
   loadDeadlines() {

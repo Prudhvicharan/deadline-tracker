@@ -1,11 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const User = require('./models/userModel');
-const College = require('./models/collegeModel');
-const axios = require('axios'); // Add this line
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const User = require("./models/userModel");
+const College = require("./models/collegeModel");
+const axios = require("axios"); // Add this line
 
-require('dotenv').config();
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -13,62 +13,71 @@ const port = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected...'))
-  .catch(err => console.log('MongoDB connection error:', err));
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected..."))
+  .catch((err) => console.log("MongoDB connection error:", err));
 
-const authRoutes = require('./routes/auth.routes');
-const universityRoutes = require('./routes/universityRoutes');
+const authRoutes = require("./routes/auth.routes");
+const universityRoutes = require("./routes/universityRoutes");
 
-app.use('/api/auth', authRoutes);
-app.use('/api/universities', universityRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/universities", universityRoutes);
 
 // Example of a protected route
-const authMiddleware = require('./middleware/auth.middleware');
-app.get('/api/protected', authMiddleware, (req, res) => {
-  res.json({ message: 'This is a protected route', userId: req.userId });
+const authMiddleware = require("./middleware/auth.middleware");
+app.get("/api/protected", authMiddleware, (req, res) => {
+  res.json({ message: "This is a protected route", userId: req.userId });
 });
 
 // Add this route for fetching colleges
-app.get('/api/colleges', async (req, res) => {
+app.get("/api/colleges", async (req, res) => {
   try {
     const { page = 0, per_page = 20 } = req.query;
     const apiKey = process.env.COLLEGE_SCORECARD_API_KEY;
-    const response = await axios.get('https://api.data.gov/ed/collegescorecard/v1/schools', {
-      params: {
-        api_key: apiKey,
-        'school.degrees_awarded.predominant': '3,4',
-        'school.ownership': '1,2',
-        fields: 'id,school.name,school.city,school.state,school.zip,latest.admissions.admission_rate.overall',
-        page,
-        per_page
+    const response = await axios.get(
+      "https://api.data.gov/ed/collegescorecard/v1/schools",
+      {
+        params: {
+          api_key: apiKey,
+          "school.degrees_awarded.predominant": "3,4",
+          "school.ownership": "1,2",
+          fields:
+            "id,school.name,school.city,school.state,school.zip,latest.admissions.admission_rate.overall",
+          page,
+          per_page,
+        },
       }
-    });
+    );
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching colleges:', error);
-    res.status(500).json({ message: 'Error fetching colleges', error: error.message });
+    console.error("Error fetching colleges:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching colleges", error: error.message });
   }
 });
 
-app.get('/api/user/colleges', authMiddleware, async (req, res) => {
+app.get("/api/user/colleges", authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.userId).populate('colleges');
+    const user = await User.findById(req.userId).populate("colleges");
     res.json(user.colleges);
   } catch (error) {
-    console.error('Error fetching user colleges:', error);
-    res.status(500).json({ message: 'Error fetching user colleges', error: error.message });
+    console.error("Error fetching user colleges:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching user colleges", error: error.message });
   }
 });
 
-app.post('/api/user/colleges', authMiddleware, async (req, res) => {
+app.post("/api/user/colleges", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
     const { name, location, collegeId, admissionRate } = req.body;
 
     // Check if the college already exists in the database
     let college = await College.findOne({ collegeId });
-    console.log('college details', college);
+    console.log("college details", college);
     if (!college) {
       // If the college doesn't exist, create a new one
       college = new College({ name, location, collegeId, admissionRate });
@@ -81,10 +90,35 @@ app.post('/api/user/colleges', authMiddleware, async (req, res) => {
       await user.save();
     }
 
-    res.json({ message: 'College added to user list' });
+    res.json({ message: "College added to user list" });
   } catch (error) {
-    console.error('Error adding college to user list:', error);
-    res.status(500).json({ message: 'Error adding college to user list', error: error.message });
+    console.error("Error adding college to user list:", error);
+    res.status(500).json({
+      message: "Error adding college to user list",
+      error: error.message,
+    });
+  }
+});
+
+// Add this route for fetching user data
+app.get("/api/userdetails", authMiddleware, async (req, res) => {
+  try {
+    // Fetch user by ID
+    const user = await User.findById(req.userId).select("-password"); // Exclude sensitive fields like password
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      username: user.username,
+      email: user.email,
+      colleges: user.colleges,
+    }); // Send user data as the response
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching user data", error: error.message });
   }
 });
 

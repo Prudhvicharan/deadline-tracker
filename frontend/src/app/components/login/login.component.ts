@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   authForm!: FormGroup;
   isRegisterMode = false;
+  hidePassword: boolean = true;
+  hideConfirmPassword: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -22,48 +24,109 @@ export class LoginComponent implements OnInit {
     this.createForm();
   }
 
+  // Custom Validator for Password Matching
+  private passwordMatchValidator(
+    formGroup: FormGroup
+  ): { [key: string]: boolean } | null {
+    if (!this.isRegisterMode) return null;
+    
+    const password = formGroup.get('password');
+    const confirmPassword = formGroup.get('confirmPassword');
+
+    if (!password || !confirmPassword) return null;
+
+    // Only validate if both fields have values and are valid
+    if (password.valid && confirmPassword.valid && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+
+    // Clear the error if passwords match
+    if (password.value === confirmPassword.value) {
+      confirmPassword.setErrors(null);
+    }
+
+    return null;
+  }
+
+  // Create Form Group
   createForm(): void {
     this.authForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      fullName: [''], // Only required in register mode
-      confirmPassword: [''], // Only required in register mode
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      fullName: [''],
+      confirmPassword: ['']
+    });
+
+    // Update validators based on current mode
+    this.updateValidators();
+
+    // Subscribe to value changes to validate passwords
+    this.authForm.valueChanges.subscribe(() => {
+      if (this.isRegisterMode) {
+        this.passwordMatchValidator(this.authForm);
+      }
     });
   }
 
-  toggleMode(): void {
-    this.authForm.reset();
-    this.isRegisterMode = !this.isRegisterMode;
+  // Update validators based on mode
+  private updateValidators(): void {
+    const fullNameControl = this.authForm.get('fullName');
+    const confirmPasswordControl = this.authForm.get('confirmPassword');
+
     if (this.isRegisterMode) {
-      this.authForm.controls['fullName'].setValidators(Validators.required);
-      this.authForm.controls['confirmPassword'].setValidators(
-        Validators.required
-      );
+      fullNameControl?.setValidators([Validators.required, Validators.minLength(3)]);
+      confirmPasswordControl?.setValidators([Validators.required, Validators.minLength(8)]);
     } else {
-      this.authForm.controls['fullName'].clearValidators();
-      this.authForm.controls['confirmPassword'].clearValidators();
+      fullNameControl?.clearValidators();
+      confirmPasswordControl?.clearValidators();
     }
-    this.authForm.controls['fullName'].updateValueAndValidity();
-    this.authForm.controls['confirmPassword'].updateValueAndValidity();
+
+    fullNameControl?.updateValueAndValidity();
+    confirmPasswordControl?.updateValueAndValidity();
+    this.authForm.updateValueAndValidity();
   }
 
+  // Toggle between Login and Register Mode
+  toggleMode(): void {
+    this.isRegisterMode = !this.isRegisterMode;
+    this.authForm.reset();
+    this.updateValidators();
+  }
+
+  // Form submission
   onSubmit(): void {
-    if (this.authForm.valid) {
-      const { email, password, fullName } = this.authForm.value;
-      if (this.isRegisterMode) {
-        // Registration logic
-        console.log('Registering:', { email, password, fullName });
-      } else {
-        // Login logic
-        this.authService.login(email, password).subscribe(
-          () => {
-            this.router.navigate(['/dashboard']);
-          },
-          (error) => {
-            console.error('Login failed:', error);
-          }
-        );
-      }
+    if (this.authForm.invalid) {
+      // Mark all fields as touched to trigger validation display
+      Object.keys(this.authForm.controls).forEach(key => {
+        const control = this.authForm.get(key);
+        control?.markAsTouched();
+      });
+      return;
+    }
+
+    const { email, password, fullName } = this.authForm.value;
+
+    if (this.isRegisterMode) {
+      this.authService.register(email, password, fullName).subscribe(
+        (response) => {
+          this.router.navigate(['/dashboard']);
+        },
+        (error) => {
+          console.error('Registration failed:', error);
+          // Handle specific error cases here
+        }
+      );
+    } else {
+      this.authService.login(email, password).subscribe(
+        (response) => {
+          this.router.navigate(['/dashboard']);
+        },
+        (error) => {
+          console.error('Login failed:', error);
+          // Handle specific error cases here
+        }
+      );
     }
   }
 }

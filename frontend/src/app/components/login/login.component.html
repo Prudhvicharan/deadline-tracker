@@ -7,8 +7,7 @@
     <mat-card class="auth-card">
       <mat-card-header>
         <mat-card-title>
-          <span *ngIf="!isRegisterMode">Login</span>
-          <span *ngIf="isRegisterMode">Register</span>
+          <span>{{ isRegisterMode ? 'Register' : 'Login' }}</span>
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
@@ -17,47 +16,68 @@
           <mat-form-field appearance="outline">
             <mat-label>Email</mat-label>
             <input matInput type="email" formControlName="email" required />
-            <mat-error *ngIf="authForm.controls['email'].invalid && authForm.controls['email'].touched">
-              Please enter a valid email.
+            <mat-error *ngIf="authForm.get('email')?.errors?.['required'] && authForm.get('email')?.touched">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="authForm.get('email')?.errors?.['email'] && authForm.get('email')?.touched">
+              Please enter a valid email address
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field  *ngIf="isRegisterMode" appearance="outline">
+          <!-- Full Name -->
+          <mat-form-field *ngIf="isRegisterMode" appearance="outline">
             <mat-label>Full Name</mat-label>
             <input matInput type="text" formControlName="fullName" required />
-            <mat-error *ngIf="authForm.controls['fullName'].invalid && authForm.controls['fullName'].touched">
-              Full name is required.
+            <mat-error *ngIf="authForm.get('fullName')?.errors?.['required'] && authForm.get('fullName')?.touched">
+              Full name is required
             </mat-error>
-          </mat-form-field> 
+            <mat-error *ngIf="authForm.get('fullName')?.errors?.['minlength'] && authForm.get('fullName')?.touched">
+              Full name must be at least 3 characters
+            </mat-error>
+          </mat-form-field>
 
           <!-- Password -->
           <mat-form-field appearance="outline">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" required />
-            <mat-error *ngIf="authForm.controls['password'].invalid && authForm.controls['password'].touched">
-              Password is required.
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required />
+            <mat-icon matSuffix (click)="hidePassword = !hidePassword">
+              {{hidePassword ? 'visibility_off' : 'visibility'}}
+            </mat-icon>
+            <mat-error *ngIf="authForm.get('password')?.errors?.['required'] && authForm.get('password')?.touched">
+              Password is required
+            </mat-error>
+            <mat-error *ngIf="authForm.get('password')?.errors?.['minlength'] && authForm.get('password')?.touched">
+              Password must be at least 8 characters
             </mat-error>
           </mat-form-field>
-            
-          <!-- Additional Fields for Register -->
-            <mat-form-field *ngIf="isRegisterMode" appearance="outline">
-              <mat-label>Confirm Password</mat-label>
-              <input matInput type="password" formControlName="confirmPassword" required />
-              <mat-error *ngIf="authForm.controls['confirmPassword'].invalid && authForm.controls['confirmPassword'].touched">
-                Passwords must match.
-              </mat-error>
-            </mat-form-field>
 
+          <!-- Confirm Password -->
+          <mat-form-field *ngIf="isRegisterMode" appearance="outline">
+            <mat-label>Confirm Password</mat-label>
+            <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" required />
+            <mat-icon matSuffix (click)="hideConfirmPassword = !hideConfirmPassword">
+              {{hideConfirmPassword ? 'visibility_off' : 'visibility'}}
+            </mat-icon>
+            <mat-error *ngIf="authForm.get('confirmPassword')?.errors?.['required'] && authForm.get('confirmPassword')?.touched">
+              Confirm password is required
+            </mat-error>
+            <mat-error *ngIf="authForm.get('confirmPassword')?.errors?.['minlength'] && authForm.get('confirmPassword')?.touched">
+              Password must be at least 8 characters
+            </mat-error>
+            <mat-error *ngIf="authForm.get('confirmPassword')?.errors?.['passwordMismatch'] && authForm.get('confirmPassword')?.touched">
+              Passwords do not match
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Submit Button -->
           <button mat-raised-button color="primary" type="submit" [disabled]="authForm.invalid">
-            <span *ngIf="!isRegisterMode">Login</span>
-            <span *ngIf="isRegisterMode">Register</span>
+            {{ isRegisterMode ? 'Register' : 'Login' }}
           </button>
         </form>
       </mat-card-content>
       <mat-card-actions>
         <button mat-button (click)="toggleMode()">
-          <span *ngIf="!isRegisterMode">Don't have an account? Register</span>
-          <span *ngIf="isRegisterMode">Already have an account? Login</span>
+          {{ isRegisterMode ? 'Already have an account? Login' : "Don't have an account? Register" }}
         </button>
       </mat-card-actions>
     </mat-card>

@@ -7,11 +7,14 @@ router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
+    const existingUserEmail = await User.findOne({ email });
+
+    if (existingUserEmail) {
       return res
         .status(400)
-        .json({ message: "Username or email already exists" });
+        .json({
+          message: "Email already exists, try logging in or reset password.",
+        });
     }
 
     const newUser = new User({ username, email, password });
@@ -42,6 +45,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.API_KEY, {
       expiresIn: "1h",
     });
+    // Here it generates the token and sends along with the user id and username
     res.json({ token, userId: user._id, username: user.username });
   } catch (error) {
     console.error("Login error:", error);

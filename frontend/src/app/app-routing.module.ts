@@ -10,21 +10,21 @@ import { UserCollegesComponent } from './components/user-colleges/user-colleges.
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  {
-    path: 'colleges',
-    component: CollegeListComponent,
-    canActivate: [AuthGuard],
-  },
+  // {
+  //   path: 'colleges',
+  //   component: CollegeListComponent,
+  //   canActivate: [AuthGuard],
+  // },
   { path: 'colleges/:id', component: ProgramDetailsComponent },
-  {
-    path: 'deadlines/:programId',
-    component: DeadlineDisplayComponent,
-    canActivate: [AuthGuard],
-  },
+  // {
+  //   path: 'deadlines/:programId',
+  //   component: DeadlineDisplayComponent,
+  //   canActivate: [AuthGuard],
+  // },
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'my-colleges', component: UserCollegesComponent },
+  // { path: '', redirectTo: '/login', pathMatch: 'full' },
+  // { path: 'my-colleges', component: UserCollegesComponent },
 ];
 
 @NgModule({

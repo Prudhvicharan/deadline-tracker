@@ -87,6 +87,16 @@ mat-form-field {
   }
 }
 
+mat-form-field {
+  &.mat-form-field-disabled {
+    opacity: 0.6;
+    
+    input, textarea {
+      cursor: not-allowed;
+    }
+  }
+}
+
 .form-grid {
   display: flex;
   flex-wrap: wrap;
