@@ -21,7 +21,9 @@ export class DashboardComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.currentUser = this.authService.currentUserValue;
+    this.currentUser = this.authService.currentUserValue
+      ? this.authService.currentUserValue.username
+      : null;
   }
 
   toggleSidebar() {

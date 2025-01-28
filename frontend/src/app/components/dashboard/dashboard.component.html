@@ -50,25 +50,48 @@
   </mat-sidenav>
 
   <!-- Main Content -->
-  <mat-sidenav-content class="dashboard-content">
-    <div class="intro-container" *ngIf="!selectedSidebarItem">
-      <div class="welcome-card">
-        <img src="assets/welcome-illustration.png" alt="Welcome" class="welcome-image" />
-        <h1>Welcome to the Deadline Tracker!</h1>
-        <p>
-          Stay on top of your academic and professional goals. Track your deadlines, organize your tasks, and never miss a critical date.
-        </p>
-        <div class="actions">
-          <button mat-raised-button color="primary" (click)="selectSidebarItem('colleges')">
-            Add Colleges
-          </button>
-          <button mat-raised-button color="accent" (click)="selectSidebarItem('deadlines')">
-            Add Deadlines
-          </button>
+  <mat-sidenav-content class="dashboard-content" [class.collapsed]="isSidebarCollapsed">
+    <div *ngIf="!selectedSidebarItem">
+    <div class="welcome-section">
+      <h1>Welcome, {{ currentUser }}!</h1>
+      <p>Let’s explore some key insights and updates below:</p>
+    </div>
+
+    <div class="highlighted-section">
+      <div class="highlight-card">
+        <mat-icon class="highlight-icon" style="color: var(--accent-color);">trending_up</mat-icon>
+        <div>
+          <h3>Weekly Progress</h3>
+          <p>You’ve completed 80% of your tasks this week!</p>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <mat-icon class="highlight-icon" style="color: var(--accent-color);">date_range</mat-icon>
+        <div>
+          <h3>Upcoming Events</h3>
+          <p>2 deadlines approaching within 3 days.</p>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <mat-icon class="highlight-icon" style="color: var(--accent-color);">insights</mat-icon>
+        <div>
+          <h3>Insights</h3>
+          <p>4 colleges added last week.</p>
         </div>
       </div>
     </div>
 
+    <div class="overview-charts">
+      <div class="chart">
+        <h3>Task Completion Rate</h3>
+        <img src="assets/task-completion-chart.png" alt="Task Completion Rate Chart" />
+      </div>
+      <div class="chart">
+        <h3>Deadline Trends</h3>
+        <img src="assets/deadline-trends-chart.png" alt="Deadline Trends Chart" />
+      </div>
+    </div>
+    </div>
     <div *ngIf="selectedSidebarItem === 'colleges'">
       <app-college-list></app-college-list>
     </div>
