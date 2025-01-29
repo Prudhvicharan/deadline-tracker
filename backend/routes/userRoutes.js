@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const universityService = require("../services/universityService");
 const authMiddleware = require("../middleware/auth.middleware");
 const User = require("../models/userModel");
 

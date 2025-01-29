@@ -94,21 +94,4 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Get User Profile (Protected Route)
-router.get("/profile", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId).select("-password");
-    res.json({
-      success: true,
-      user,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error fetching profile",
-    });
-  }
-});
-
 module.exports = router;
