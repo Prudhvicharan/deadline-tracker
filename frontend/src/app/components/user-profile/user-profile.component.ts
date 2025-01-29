@@ -55,10 +55,10 @@ export class UserProfileComponent implements OnInit {
 
   private loadUserData(): void {
     // Mock API call
-    this.collegeService.getUserDetails().subscribe((user) => {
-      if (user) {
-        console.log(user);
-        this.userForm.patchValue(user);
+    this.collegeService.getUserDetails().subscribe((data: any) => {
+      if (data) {
+        console.log(data);
+        this.userForm.patchValue(data.user);
       }
     });
     // const userData = {
