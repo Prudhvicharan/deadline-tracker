@@ -1,43 +1,251 @@
 <div class="college-explorer">
-  <div class="search-container">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Explore Colleges</mat-label>
-      <input matInput [(ngModel)]="searchTerm" (keyup)="onSearchInput()" placeholder="Search by name, location, or program">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="searchColleges()">Search</button>
-  </div>
-
-  <div class="college-grid-container">
-    <div class="college-grid" *ngIf="colleges.length > 0">
-      <mat-card *ngFor="let college of colleges" class="college-card">
-        <mat-card-header>
-          <div mat-card-avatar class="college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/images/default-college.svg') + ')'"></div>
-          <mat-card-title>{{college.name}}</mat-card-title>
-          <mat-card-subtitle>{{college.location}}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p><mat-icon class="collge-icon">school</mat-icon> Admission Rate: {{college.admissionRate | percent}}</p>
-          <mat-chip-list>
-            <mat-chip *ngFor="let program of college.topPrograms | slice:0:3">{{program}}</mat-chip>
-          </mat-chip-list>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button color="primary" (click)="viewDetails(college)">DETAILS</button>
-          <button mat-button color="accent" (click)="addToMyList(college)">
-            <mat-icon>favorite</mat-icon> ADD TO LIST
-          </button>
-        </mat-card-actions>
-      </mat-card>
+  <!-- Header with search and view controls -->
+  <div class="explorer-header">
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Find your perfect college</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Search by name, location, or program">
+        <button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchControl.setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
     </div>
-    <p *ngIf="colleges.length === 0" class="no-results">No colleges found. Try adjusting your search.</p>
+    
+    <div class="view-controls">
+      <button mat-icon-button [color]="viewMode === 'grid' ? 'primary' : ''" (click)="viewMode = 'grid'" matTooltip="Grid View">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button mat-icon-button [color]="viewMode === 'list' ? 'primary' : ''" (click)="viewMode = 'list'" matTooltip="List View">
+        <mat-icon>view_list</mat-icon>
+      </button>
+      <button mat-icon-button class="filter-button-mobile" (click)="toggleMobileFilters()" matTooltip="Filters">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
   </div>
 
-  <div class="paginator-container">
-    <mat-paginator [length]="totalItems"
-                   [pageSize]="pageSize"
-                   [pageSizeOptions]="[12, 24, 48]"
-                   (page)="onPageChange($event)">
-    </mat-paginator>
+  <div class="content-container">
+    <!-- Filters sidebar -->
+    <aside class="filters-sidebar" [class.open]="mobileFiltersOpen">
+      <div class="filters-header">
+        <h3>Filters</h3>
+        <button mat-icon-button (click)="toggleMobileFilters()" class="close-filters">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      
+      <mat-form-field appearance="outline" class="sort-select">
+        <mat-label>Sort by</mat-label>
+        <mat-select [(value)]="currentSort" (selectionChange)="applyFilters()">
+          <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+            {{option.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Admission Rate</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-selection-list [(ngModel)]="selectedFilters.admissionRate" (selectionChange)="applyFilters()">
+          <mat-list-option value="0-25">Below 25%</mat-list-option>
+          <mat-list-option value="25-50">25% - 50%</mat-list-option>
+          <mat-list-option value="50-75">50% - 75%</mat-list-option>
+          <mat-list-option value="75-100">Above 75%</mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>States</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="outline" class="filter-search">
+          <mat-label>Search states</mat-label>
+          <input matInput placeholder="Type to search">
+        </mat-form-field>
+        <mat-selection-list [(ngModel)]="selectedFilters.states" (selectionChange)="applyFilters()">
+          <mat-list-option *ngFor="let state of stateOptions" [value]="state">
+            {{state}}
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Programs</mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-form-field appearance="outline" class="filter-search">
+          <mat-label>Search programs</mat-label>
+          <input matInput placeholder="Type to search">
+        </mat-form-field>
+        <mat-selection-list [(ngModel)]="selectedFilters.programs" (selectionChange)="applyFilters()">
+          <mat-list-option *ngFor="let program of programOptions" [value]="program">
+            {{program}}
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
+      
+      <div class="filter-actions">
+        <button mat-stroked-button (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon> Reset All
+        </button>
+        <button mat-raised-button color="primary" (click)="applyFilters()" class="apply-filters-mobile">
+          Apply Filters
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="colleges-container">
+      <!-- Active filters display -->
+      <div class="active-filters" *ngIf="selectedFilters.admissionRate.length > 0 || selectedFilters.states.length > 0 || selectedFilters.programs.length > 0">
+        <span class="filter-label">Active filters:</span>
+        <mat-chip-list>
+          <!-- Use component methods instead of inline arrow functions -->
+          <mat-chip *ngFor="let rate of selectedFilters.admissionRate" removable (removed)="removeAdmissionRateFilter(rate)">
+            {{ rate === '0-25' ? 'Below 25%' : rate === '25-50' ? '25% - 50%' : rate === '50-75' ? '50% - 75%' : 'Above 75%' }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <mat-chip *ngFor="let state of selectedFilters.states" removable (removed)="removeStateFilter(state)">
+            {{ state }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+          <mat-chip *ngFor="let program of selectedFilters.programs" removable (removed)="removeProgramFilter(program)">
+            {{ program }}
+            <mat-icon matChipRemove>cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-list>
+        <button mat-button color="warn" (click)="clearFilters()">Clear All</button>
+      </div>
+
+      <!-- Loading indicator -->
+      <div class="loading-container" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading colleges...</p>
+      </div>
+
+      <!-- No results message -->
+      <div class="no-results" *ngIf="!isLoading && filteredColleges.length === 0">
+        <mat-icon class="no-results-icon">search_off</mat-icon>
+        <h3>No colleges found</h3>
+        <p>Try adjusting your search criteria or filters</p>
+        <button mat-raised-button color="primary" (click)="clearFilters()">Clear All Filters</button>
+      </div>
+
+      <!-- Grid View -->
+      <div class="college-grid" *ngIf="!isLoading && filteredColleges.length > 0 && viewMode === 'grid'">
+        <mat-card *ngFor="let college of filteredColleges" class="college-card" (click)="viewDetails(college)">
+          <div class="card-banner" [style.background-color]="college.themeColor || '#3f51b5'">
+            <div class="college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/images/default-college.svg') + ')'"></div>
+          </div>
+          <mat-card-header>
+            <mat-card-title class="college-name">{{college.name}}</mat-card-title>
+            <mat-card-subtitle class="college-location">
+              <mat-icon class="location-icon">location_on</mat-icon>{{college.location}}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="admission-rate">
+              <div class="rate-label">Admission Rate</div>
+              <div class="rate-progress">
+                <mat-progress-bar mode="determinate" [value]="college.admissionRate * 100" 
+                  [color]="college.admissionRate < 0.3 ? 'warn' : college.admissionRate < 0.7 ? 'accent' : 'primary'">
+                </mat-progress-bar>
+                <div class="rate-percentage">{{college.admissionRate | percent}}</div>
+              </div>
+            </div>
+            
+            <div class="programs-section">
+              <div class="section-label">Top Programs</div>
+              <mat-chip-list>
+                <mat-chip *ngFor="let program of college.topPrograms | slice:0:3" 
+                  class="program-chip" color="primary" selected="false">
+                  {{ program }}
+                </mat-chip>
+                <mat-chip *ngIf="(college.topPrograms?.length || 0) > 3"
+                  class="more-chip">
+                  +{{ (college.topPrograms?.length || 0) - 3 }} more
+                </mat-chip>
+              </mat-chip-list>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions>
+            <button mat-button color="primary" (click)="viewDetails(college); $event.stopPropagation()">
+              <mat-icon>info</mat-icon> VIEW DETAILS
+            </button>
+            <button mat-icon-button [color]="college.isBookmarked ? 'warn' : ''" 
+              (click)="addToMyList(college, $event)" class="bookmark-button"
+              [matTooltip]="college.isBookmarked ? 'Remove from my list' : 'Add to my list'">
+              <mat-icon>{{college.isBookmarked ? 'favorite' : 'favorite_border'}}</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <!-- List View -->
+      <div class="college-list" *ngIf="!isLoading && filteredColleges.length > 0 && viewMode === 'list'">
+        <mat-card *ngFor="let college of filteredColleges" class="college-list-item" (click)="viewDetails(college)">
+          <div class="list-item-content">
+            <div class="college-logo-container">
+              <div class="list-college-avatar" [style.background-image]="'url(' + (college.logoUrl || 'assets/images/default-college.svg') + ')'"></div>
+            </div>
+            
+            <div class="college-info">
+              <h3 class="college-name">{{college.name}}</h3>
+              <p class="college-location">
+                <mat-icon class="location-icon">location_on</mat-icon>{{college.location}}
+              </p>
+              
+              <div class="admission-brief">
+                <span class="admission-label">Admission: </span>
+                <span class="admission-value" [ngClass]="{
+                  'low-rate': college.admissionRate < 0.3,
+                  'medium-rate': college.admissionRate >= 0.3 && college.admissionRate < 0.7,
+                  'high-rate': college.admissionRate >= 0.7
+                }">
+                  {{college.admissionRate | percent}}
+                </span>
+              </div>
+              
+              <div class="program-brief" *ngIf="(college.topPrograms?.length || 0) > 0">
+                <span class="program-label">Programs: </span>
+                <span class="program-list">
+                  {{ (college.topPrograms || []).slice(0,2).join(', ') }}
+
+                  <span *ngIf="(college.topPrograms?.length || 0) > 2">
+                    +{{ ((college.topPrograms?.length || 0) - 2) }} more
+
+                  </span>
+                </span>
+              </div>
+            </div>
+            
+            <div class="list-actions">
+              <button mat-icon-button [color]="college.isBookmarked ? 'warn' : ''" 
+                (click)="addToMyList(college, $event)" 
+                [matTooltip]="college.isBookmarked ? 'Remove from my list' : 'Add to my list'">
+                <mat-icon>{{college.isBookmarked ? 'favorite' : 'favorite_border'}}</mat-icon>
+              </button>
+              <button mat-icon-button color="primary" 
+                (click)="viewDetails(college); $event.stopPropagation()" matTooltip="View details">
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator *ngIf="!isLoading && filteredColleges.length > 0"
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[12, 24, 48]"
+        (page)="onPageChange($event)"
+        class="college-paginator">
+      </mat-paginator>
+    </main>
   </div>
 </div>

@@ -47,26 +47,70 @@ export class CollegeService {
     );
   }
 
-  // Search for colleges by name
-  searchColleges(searchTerm: string): Observable<any[]> {
+  // Get filter options
+  getFilterOptions(): Observable<any> {
+    return this.http.get<any>(`${this.backendUrl}/filter-options`);
+  }
+
+  // Search colleges with filters
+  searchColleges(filters: any): Observable<any> {
     let params = new HttpParams()
       .set('api_key', this.apiKey)
-      .set('school.name', searchTerm)
+      .set('school.degrees_awarded.predominant', '3,4')
+      .set('school.ownership', '1,2')
       .set(
         'fields',
         'id,school.name,school.city,school.state,school.zip,latest.admissions.admission_rate.overall'
       )
       .set('per_page', '20');
 
+    // Add search term if provided
+    if (filters.search) {
+      params = params.set('school.name', filters.search);
+    }
+
+    // Add state filters if provided
+    if (filters.states && filters.states.length > 0) {
+      const stateString = filters.states.join(',');
+      params = params.set('school.state', stateString);
+    }
+
+    // Add admission rate filters if provided
+    if (filters.admissionRate && filters.admissionRate.length > 0) {
+      // Assuming admission rate filters are ranges like [0-0.3, 0.3-0.6, 0.6-1]
+      const minRate = Math.min(...filters.admissionRate.map((range: string) => parseFloat(range.split('-')[0])));
+      const maxRate = Math.max(...filters.admissionRate.map((range: string) => parseFloat(range.split('-')[1])));
+      
+      params = params.set('latest.admissions.admission_rate.overall__range', `${minRate}..${maxRate}`);
+    }
+
+    // Add program filters if provided
+    if (filters.programs && filters.programs.length > 0) {
+      const programString = filters.programs.join(',');
+      params = params.set('latest.programs.cip_4_digit.code', programString);
+    }
+
+    // Handle sorting
+    if (filters.sort) {
+      const [field, direction] = filters.sort.split('-');
+      
+      if (field === 'name') {
+        params = params.set('sort', direction === 'asc' ? 'school.name' : '-school.name');
+      } else if (field === 'admission') {
+        params = params.set('sort', direction === 'asc' ? 'latest.admissions.admission_rate.overall' : '-latest.admissions.admission_rate.overall');
+      }
+    }
+
     return this.http.get<any>(this.apiUrl, { params }).pipe(
-      map((response: any) =>
-        response.results.map((uni: any) => ({
+      map((response: any) => ({
+        colleges: response.results.map((uni: any) => ({
           id: uni.id,
           name: uni['school.name'],
           location: `${uni['school.city']}, ${uni['school.state']} ${uni['school.zip']}`,
           admissionRate: uni['latest.admissions.admission_rate.overall'],
-        }))
-      )
+        })),
+        metadata: response.metadata,
+      }))
     );
   }
 
@@ -126,6 +170,13 @@ export class CollegeService {
   // Add a college to the user's saved list
   addCollege(college: any): Observable<any> {
     return this.http.post(`${this.backendUrl}/user/colleges`, college, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // Remove a college from the user's saved list
+  removeCollege(collegeId: string): Observable<any> {
+    return this.http.delete(`${this.backendUrl}/user/colleges/${collegeId}`, {
       headers: this.getHeaders(),
     });
   }
